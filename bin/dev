@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Asegurarse de que estamos usando la versión correcta de Ruby
+# rbenv o RVM pueden gestionar esto
+if [ -f ".ruby-version" ]; then
+  echo "Usando la versión de Ruby especificada en .ruby-version"
+  rbenv install -s
+  rbenv local $(cat .ruby-version)
+fi
+
+# Cargar el entorno si existe un archivo .env
+if [ -f ".env" ]; then
+  echo "Cargando variables de entorno desde .env"
+  export $(cat .env | xargs)
+fi
+
+# Instalar las gemas necesarias
+echo "Instalando las dependencias..."
+bundle install
+
+# Configurar la base de datos
+echo "Configurando la base de datos..."
+bundle exec rake db:setup   # o db:create db:migrate si la base de datos ya existe
+
+# Iniciar el servidor Rails (o cualquier otro servidor que uses)
+echo "Iniciando el servidor..."
+bundle exec rails server
